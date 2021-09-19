@@ -2,6 +2,10 @@
 #include <string>
 #include "SDL.h"
 
+#define FPS 60
+#define Wwidth 640
+#define Wheight 480
+
 int main(int argc, char* argv[])
 {
 	// SDL quit at exit
@@ -16,7 +20,10 @@ int main(int argc, char* argv[])
 
 	// Create Window
 	// Give the creation to the `Window Var`
-	Window = SDL_CreateWindow("Main Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_RESIZABLE);
+	Window = SDL_CreateWindow("Main Application", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Wwidth, Wheight, SDL_WINDOW_RESIZABLE);
+
+	// FPS Limitingg
+	uint8_t Ticks;
 
 	SDL_Event event;
 	bool Running = true;
@@ -33,6 +40,7 @@ int main(int argc, char* argv[])
 
 	while (Running)
 	{
+		Ticks = SDL_GetTicks();
 		while (SDL_PollEvent(&event))
 		{
 			// Detect if we press "X" to close our window
@@ -41,6 +49,10 @@ int main(int argc, char* argv[])
 				Running = false;
 				break;
 			}
+		}
+		if ((1000/ FPS) > SDL_GetTicks() - Ticks)
+		{
+			SDL_Delay(1000 / FPS - (SDL_GetTicks() - Ticks) );
 		}
 	}
 	SDL_DestroyWindow(Window);
