@@ -6,6 +6,9 @@
 #define Wwidth 640
 #define Wheight 480
 
+void capFrame(uint32_t Time);
+
+
 int main(int argc, char* argv[])
 {
 	// SDL quit at exit
@@ -50,11 +53,17 @@ int main(int argc, char* argv[])
 				break;
 			}
 		}
-		if ((1000/ FPS) > SDL_GetTicks() - Ticks)
-		{
-			SDL_Delay(1000 / FPS - (SDL_GetTicks() - Ticks) );
-		}
+		capFrame(Ticks);
+		
 	}
 	SDL_DestroyWindow(Window);
 	return 1;
+}
+
+void capFrame(uint32_t Time)
+{
+	if ((1000 / FPS) > SDL_GetTicks() - Time)
+	{
+		SDL_Delay(1000 / FPS - (SDL_GetTicks() - Time));
+	}
 }
