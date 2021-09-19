@@ -21,6 +21,14 @@ int main(int argc, char* argv[])
 	SDL_Event event;
 	bool Running = true;
 
+	int x, y; // Top Left Coordinate
+	int w, h; // Size of the window from (x, y) Coord 
+
+	// For the Window Functionality:
+	// https://web.archive.org/web/20210210112300/http://wiki.libsdl.org/CategoryVideo
+
+	SDL_SetWindowTitle(Window, "Nama Saya ikan");
+
 	while (Running)
 	{
 		while (SDL_PollEvent(&event))
@@ -32,6 +40,9 @@ int main(int argc, char* argv[])
 				break;
 			}
 		}
+
+		SDL_GetWindowPosition(Window, &x, &y);
+		std::cout << "X: " << x << ",  Y :" << y << std::endl;
 	}
 	
 	SDL_DestroyWindow(Window);
