@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include "SDL.h"
 
 #define FPS 60
@@ -11,6 +12,7 @@ void capFrame(uint32_t Time);
 // all of the "Sprite" is based on Python's PyGame Framework
 class Sprite
 {
+protected:
 	SDL_Surface* image = NULL;
 	SDL_Rect rect;
 
@@ -25,8 +27,8 @@ public:
 		rect = image->clip_rect;
 		OriginX = rect.w / 2;
 		OriginY = rect.h / 2;
-		rect.x = x - OriginX;
-		rect.y = y - OriginY;
+		rect.x = x;
+		rect.y = y;
 	}
 
 	void update()
@@ -123,7 +125,54 @@ public:
 	}
 
 };
+class Block : public Sprite
+{
+public:
+	Block(uint32_t color, int x, int y, int w = 64, int h = 48) :
+	Sprite(color, x, y, w, h)
+	{
+		update_properties();
+	}
+	void update_properties()
+	{
+		OriginX = 0;
+		OriginY = 0;
 
+		set_position(rect.x, rect.y);
+	}
+	void set_position(int x, int y)
+	{
+		rect.x = x - OriginX;
+		rect.y = y - OriginY;
+	}
+	void set_image(const char filename[])
+	{
+		if (filename != NULL)
+		{
+			SDL_Surface* loaded_image = SDL_LoadBMP(filename);
+
+			if (loaded_image != NULL)
+			{
+				image = loaded_image;
+				int old_x = rect.x, old_y = rect.y;
+
+				rect = image->clip_rect;
+
+				rect.x = old_x;
+				rect.y = old_y;
+
+				update_properties();
+
+			}
+			else
+			{
+				std::cout << "Failed loading images" << std::endl;
+			}
+		}
+	}
+
+
+};
 int main(int argc, char* argv[])
 {
 	// SDL quit at exit
@@ -156,12 +205,14 @@ int main(int argc, char* argv[])
 	uint32_t blue = SDL_MapRGB(Screen->format, 0, 0, 255);
 	SDL_FillRect(Screen, NULL, color);
 
-	Sprite red_box(red, Wwidth / 2, Wheight / 2);
-	Sprite blue_box(blue, Wwidth / 2 - 100, Wheight / 2 - 100);
-	SpriteGroup active_sprite;
-	active_sprite.add(&red_box);
-	active_sprite.add(&blue_box);
+	Block block(red, 0, 0);
+	block.set_image("res/ES31_willowisp.bmp");
+	Block block2(blue, 100, 100);
 
+	SpriteGroup active_sprite;
+	active_sprite.add(&block);
+	active_sprite.add(&block2);
+	
 	// active_sprite.remove(red_box);
 
 	active_sprite.draw(Screen);
