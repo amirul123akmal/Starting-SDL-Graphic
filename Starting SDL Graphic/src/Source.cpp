@@ -3,6 +3,7 @@
 #include <string>
 
 #include "SDL_image.h"
+#include "SDL_mixer.h"
 #include "SDL.h"
 
 #define FPS 60
@@ -182,6 +183,16 @@ int main(int argc, char* argv[])
 
 	// SDL initialization
 	SDL_Init(SDL_INIT_EVERYTHING);
+	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
+
+	Mix_Chunk* sound = NULL;
+	sound = Mix_LoadWAV("res/pain.wav");
+	Mix_PlayChannel(-1, sound, 0);
+
+	Mix_Music* music = NULL;
+	music = Mix_LoadMUS("res/beat.wav");
+	Mix_PlayMusic(music, -1);
+
 
 	// SDL Window
 	// Must be a pointer
@@ -225,7 +236,7 @@ int main(int argc, char* argv[])
 
 	while (Running)
 	{
-		Ticks = SDL_GetTicks();
+ 		Ticks = SDL_GetTicks();
 		while (SDL_PollEvent(&event))
 		{
 			// Detect if we press "X" to close our window
@@ -238,6 +249,10 @@ int main(int argc, char* argv[])
 		capFrame(Ticks);
 		
 	}
+
+	Mix_FreeChunk(sound);
+	sound = NULL;
+	Mix_CloseAudio(); 
 	SDL_DestroyWindow(Window);
 	return 1;
 }
