@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+
+#include "SDL_image.h"
 #include "SDL.h"
 
 #define FPS 60
@@ -149,7 +151,7 @@ public:
 	{
 		if (filename != NULL)
 		{
-			SDL_Surface* loaded_image = SDL_LoadBMP(filename);
+			SDL_Surface* loaded_image = IMG_Load(filename);
 
 			if (loaded_image != NULL)
 			{
@@ -206,13 +208,13 @@ int main(int argc, char* argv[])
 	SDL_FillRect(Screen, NULL, color);
 
 	Block block(red, 0, 0);
-	block.set_image("res/ES31_willowisp.bmp");
+	block.set_image("res/water_sprites.png");
 	Block block2(blue, 100, 100);
 
 	SpriteGroup active_sprite;
 	active_sprite.add(&block);
 	active_sprite.add(&block2);
-	
+	 
 	// active_sprite.remove(red_box);
 
 	active_sprite.draw(Screen);
