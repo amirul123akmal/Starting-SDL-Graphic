@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <vector>
 #include "SDL.h"
 
 #define FPS 60
@@ -8,6 +8,7 @@
 
 void capFrame(uint32_t Time);
 
+// all of the "Sprite" is based on Python's PyGame Framework
 class Sprite
 {
 	SDL_Surface* image = NULL;
@@ -32,10 +33,93 @@ public:
 	{
 		// later
 	}
-
 	void draw(SDL_Surface* Destination)
 	{
 		SDL_BlitSurface( image, NULL, Destination, &rect);
+	}
+	SDL_Surface* get_image() const
+	{
+		return image;
+	}
+	bool operator==( const Sprite &other ) const
+	{
+		return ( image == other.get_image());
+	}
+
+};
+class SpriteGroup
+{
+	// <Sprite*> is to make sure all the data in each object are same
+	std::vector<Sprite*> sprites;
+	int spriteSize = 0;
+public:
+	SpriteGroup copy()
+	{
+		SpriteGroup new_group;
+		for (int i = 0 ; i < spriteSize; i++ )
+		{
+			new_group.add(sprites[i]);
+		}
+	}
+	void add(Sprite *sprite)
+	{
+		sprites.push_back(sprite);
+		spriteSize = sprites.size();
+	}
+	void remove( Sprite sprite_object)
+	{
+		for (int i = 0 ; i < spriteSize ; i++)
+		{
+			if ( *sprites[i] == sprite_object)
+			{
+				sprites.erase(sprites.begin() + i);
+			}
+			spriteSize = sprites.size();
+		}
+	}
+	bool has( Sprite sprite_obj)
+	{
+		for (int i = 0; i < spriteSize; i++)
+		{
+			if (*sprites[i] == sprite_obj)
+			{
+				return true;
+			}
+			return false;
+		}
+	}
+	void update()
+	{
+		if (!sprites.empty())
+		{
+			for (int i = 0; i < spriteSize; i++)
+			{
+				sprites[i]->update();
+			}
+		}
+	}
+	void draw(SDL_Surface * Destination)
+	{
+		if (!sprites.empty())
+		{
+			for (int i = 0; i < spriteSize; i++)
+			{
+				sprites[i]->draw(Destination);
+			}
+		}
+	}
+	void empty()
+	{
+		sprites.clear();
+		spriteSize = sprites.size();
+	}
+	int size()
+	{
+		return spriteSize;
+	}
+	std::vector<Sprite*> getSprites()
+	{
+		return sprites;
 	}
 
 };
@@ -69,10 +153,18 @@ int main(int argc, char* argv[])
 	SDL_Surface* Screen = SDL_GetWindowSurface(Window);
 	uint32_t color = SDL_MapRGB(Screen->format, 100, 200, 255);
 	uint32_t red = SDL_MapRGB(Screen->format, 255, 0, 0);
+	uint32_t blue = SDL_MapRGB(Screen->format, 0, 0, 255);
 	SDL_FillRect(Screen, NULL, color);
 
-	Sprite application(red, Wwidth / 2, Wheight / 2);
-	application.draw(Screen);
+	Sprite red_box(red, Wwidth / 2, Wheight / 2);
+	Sprite blue_box(blue, Wwidth / 2 - 100, Wheight / 2 - 100);
+	SpriteGroup active_sprite;
+	active_sprite.add(&red_box);
+	active_sprite.add(&blue_box);
+
+	// active_sprite.remove(red_box);
+
+	active_sprite.draw(Screen);
 
 	// To Update The Screen
 	// Any draw please put before this line
@@ -96,7 +188,6 @@ int main(int argc, char* argv[])
 	SDL_DestroyWindow(Window);
 	return 1;
 }
-
 void capFrame(uint32_t Time)
 {
 	if ((1000 / FPS) > SDL_GetTicks() - Time)
